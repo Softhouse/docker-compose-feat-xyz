@@ -4,6 +4,7 @@ mongodb:
      - 27017
     volumes:
      - /var/mongo/db:/data/db
+     - /var/mongo/backup:/data/backup
     restart: always
 katalog:
     image: joakimbeng/katalog
@@ -31,6 +32,12 @@ api:
     environment:
      - KATALOG_VHOSTS=default/api
      - MONGO_HOST=mongodb
+apibackup:
+    build: github.com/Softhouse/docker-mongodump.git
+    links:
+     - mongodb:mongo
+    volumes:
+     - /var/mongo/backup:/backup
 builder:
     build: github.com/Softhouse/flaming-computing-machine.git
     links:
