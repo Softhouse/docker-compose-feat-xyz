@@ -1,33 +1,34 @@
 #!/usr/bin/env bash
 
-#deploys the docker-compose.yml as an upstart service named freezing-wookie
-#logging is done to /var/log/upstart/freezing-wookie.log
+# deploys a docker-compose orchestration as an upstart service
+# with the name of the directory this script is placed in,
+# usually the name of the cloned repository.
 
-#name=${PWD##*/}
-name="freezing-wookie"
+path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+name=${path##*/}
 
 #check prerequisites
-if [ ! -f ./github_secret.env ]; then
+if [ ! -f ${path}/github_secret.env ]; then
 	echo "creating default github_secret.env file"
 	echo "This secret should match the configuration set in your github hooks"
-	echo "GITHUB_SECRET=default_secret" > github_secret.env
+	echo "GITHUB_SECRET=default_secret" > ${path}/github_secret.env
 fi
-source ./github_secret.env
+source ${path}/github_secret.env
 if [ -z $GITHUB_SECRET ]; then
 	echo "Invalid github_secret.env file, should set environment variable"
 	echo "GITHUB_SECRET=<your secret here>"
 	exit 1
 fi
 
-if [ ! -f ./google_auth_proxy.env ]; then
+if [ ! -f ${path}/google_auth_proxy.env ]; then
 	echo "creating default google_auth_proxy.env file"
 	echo "For instructions how to obtain client id and client secret, see"
 	echo "https://github.com/bitly/google_auth_proxy#oauth-configuration"
 	echo "GOOGLE_AUTH_PROXY_CLIENT_ID=default_client_id
 GOOGLE_AUTH_PROXY_CLIENT_SECRET=default_client_secret
-GOOGLE_AUTH_PROXY_COOKIE_SECRET=default_cookie_secret" > google_auth_proxy.env
+GOOGLE_AUTH_PROXY_COOKIE_SECRET=default_cookie_secret" > ${path}/google_auth_proxy.env
 fi
-source ./google_auth_proxy.env
+source ${path}/google_auth_proxy.env
 if [ -z $GOOGLE_AUTH_PROXY_CLIENT_ID ] || [ -z $GOOGLE_AUTH_PROXY_CLIENT_SECRET ] || [ -z $GOOGLE_AUTH_PROXY_COOKIE_SECRET ]; then
 	echo "Invalid google_auth_proxy.env file, should set the environment variables"
 	echo "GOOGLE_AUTH_PROXY_CLIENT_ID=<your client id here>"
@@ -36,38 +37,30 @@ if [ -z $GOOGLE_AUTH_PROXY_CLIENT_ID ] || [ -z $GOOGLE_AUTH_PROXY_CLIENT_SECRET 
 	exit 1
 fi
 
-sudo mkdir -p /var/${name}
-cp -r proxy docker-compose.yml *.env /var/${name}/
-
-# the mustache file gets overwritten if the volume is mounted. Comment in the lines below and the yml to enable the volume
-# TODO remove this when the docker image is fixed
-# if [ ! -d /var/katalog/tpl ] || [ -z /var/katalog/tpl/mustache.nginx ]; then
-# 	#workaround to copy the nginx.mustache file from the container that gets overwritten when mounting the tpl volume
-# 	sudo mkdir -p /var/katalog/
-# 	rm -f tmp.cid 2> /dev/null
-# 	sudo docker run -d --privileged --cidfile tmp.cid -v /var/run/docker.sock:/var/run/docker.sock joakimbeng/katalog
-# 	sudo docker cp `cat tmp.cid`:/app/tpl/ /var/katalog/
-# 	sudo docker kill `cat tmp.cid`
-# 	sudo docker rm `cat tmp.cid`
-# 	rm -f tmp.cid
-# fi
+useradd -G docker $name
 
 sudo service ${name} stop 2> /dev/null
-#logging sugar
-cd /var/${name} && docker-compose pull && docker-compose build
+#logging sugar to prevent people from thinking it doesn't work if it's done quietly by the first up command
+docker-compose -f ${path}/docker-compose.yml pull && \
+docker-compose -f ${path}/docker-compose.yml build
+
 sudo sh -c "echo '
-description \"A job for running a ${name} docker-compose service\"
-author \"Jonas Eckerström\"
+description \"A job for running the ${name} docker-compose service\"
+
+setuid $name
 
 start on filesystem and started docker on runlevel [2345]
 stop on shutdown
 
 post-stop script
-	cd /var/${name} && docker-compose stop
+	docker-compose -f ${path}/docker-compose.yml stop
 end script
 
-exec sh -c \"cd /var/${name} && docker-compose up\"
+exec sh -c \"docker-compose -f ${path}/docker-compose.yml up\"
 respawn' > /etc/init/${name}.conf"
 
 sudo init-checkconf /etc/init/${name}.conf || exit 1
 sudo service ${name} start
+
+echo "Service ${name} successfully deployed"
+echo "See /var/log/upstart/${name}.log for logs"
