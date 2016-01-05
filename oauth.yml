@@ -1,0 +1,20 @@
+oauth:
+    image: a5huynh/oauth2_proxy
+    expose:
+     - 4180
+    env_file: oauth_proxy.env
+    links:
+     - sitewatcher
+    command: --upstream=http://sitewatcher
+             --http-address=0.0.0.0:4180
+             --cookie-secure=false
+             --redirect-url="http://localhost:8080/oauth2/callback"
+             --email-domain="softhouse.se"
+    restart: unless-stopped
+proxy:
+    links:
+     - oauth
+     - sitewatcher
+    volumes:
+     - ./oauth/nginx/sites-enabled:/etc/nginx/sites-enabled
+    restart: unless-stopped

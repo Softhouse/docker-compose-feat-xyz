@@ -4,7 +4,6 @@ mongodb:
      - 27017
     volumes:
      - /var/mongo/db:/data/db
-     - /var/mongo/backup:/data/backup
     restart: unless-stopped
 katalog:
     image: joakimbeng/katalog
@@ -15,7 +14,6 @@ katalog:
      - /var/run/docker.sock:/var/run/docker.sock
      - /var/katalog/data:/app/data
      - /var/katalog/nginx:/app/nginx
-#     - /var/katalog/tpl:/app/tpl
     restart: unless-stopped
 sitewatcher:
     build: github.com/letterix/nginx-site-watcher.git
@@ -32,13 +30,6 @@ api:
     environment:
      - KATALOG_VHOSTS=default/api
      - MONGO_HOST=mongodb
-apibackup:
-    build: github.com/Softhouse/docker-mongodump.git
-    links:
-     - mongodb:mongo
-    volumes:
-     - /var/mongo/backup:/backup
-    restart: unless-stopped
 builder:
     build: github.com/Softhouse/flaming-computing-machine.git
     links:
@@ -52,23 +43,13 @@ builder:
      - MONGO_HOST=mongodb
      - SITEWATCHER_HOST=xyz
     restart: unless-stopped
-googleauth:
-    image: a5huynh/google-auth-proxy
-    expose:
-     - 4180
-    env_file: google_auth_proxy.env
-    links:
-     - sitewatcher
-    command: --upstream=http://sitewatcher --http-address=0.0.0.0:4180 --cookie-https-only=false --redirect-url="http://xyz.softhouse.se/oauth2/callback" --google-apps-domain="softhouse.se"
-    restart: unless-stopped
 proxy:
     image: nginx
     ports:
      - 80:80
     links:
-     - googleauth
      - sitewatcher
     volumes:
-     - proxy/nginx/nginx.conf:/etc/nginx/nginx.conf
-     - proxy/nginx/sites-enabled:/etc/nginx/sites-enabled
+     - ./proxy/nginx/nginx.conf:/etc/nginx/nginx.conf
+     - ./proxy/nginx/sites-enabled:/etc/nginx/sites-enabled
     restart: unless-stopped

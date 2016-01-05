@@ -14,10 +14,10 @@ compose_version=`curl -sw %{redirect_url} https://github.com/docker/compose/rele
 compose_version=`echo ${compose_version##*/}`
 sudo bash -c "curl -sL https://raw.githubusercontent.com/docker/compose/${compose_version}/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose"
 sudo bash -c "curl -sL https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
-sudo chmod +x /usr/local/bin/docker-compose
+sudo chmod +rx /usr/local/bin/docker-compose
 
 #Machine
 machine_version=`curl -sw %{redirect_url} https://github.com/docker/machine/releases/latest`
 machine_version=`echo ${machine_version##*/}`
 sudo bash -c "curl -sL https://github.com/docker/machine/releases/download/${machine_version}/docker-machine_`uname -s`-`uname -m` > /usr/local/bin/docker-machine"
-sudo chmod +x /usr/local/bin/docker-machine
+sudo chmod +rx /usr/local/bin/docker-machine

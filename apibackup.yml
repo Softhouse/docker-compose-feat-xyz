@@ -1,0 +1,10 @@
+apibackup:
+    build: github.com/Softhouse/docker-mongodump.git
+    links:
+     - mongodb:mongo
+    volumes:
+     - /var/mongo/backup:/backup
+    restart: unless-stopped
+mongodb:
+    volumes:
+     - /var/mongo/backup:/data/backup
