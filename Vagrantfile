@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
     yml.each do |service|
       ports = service[1]['ports'].each do |port|
         host, guest = port.split(':')
-        config.vm.network "forwarded_port", guest: guest || host, host: host, protocol: 'tcp'
+        config.vm.network "forwarded_port", guest: host, host: host, protocol: 'tcp'
       end unless service[1]['ports'].nil?
     end unless yml.nil?
   end unless files.nil?
@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: 'linux-docker.sh', privileged: false
 
   ## run the service
-  #config.vm.provision :shell, inline: 'sg docker "docker-compose -f /vagrant/docker-compose.yml up"'
+  #config.vm.provision :shell, inline: 'sg docker "docker-compose /vagrant/docker-compose.yml up -f -f /vagrant/deploy.yml -f /vagrant/docker-bench-security.yml"'
 
   ## deploy as upstart service and benchmark security
   config.vm.provision :shell, inline: 'sg docker "/vagrant/deploy.sh"'
