@@ -19,5 +19,5 @@ sudo chmod +rx /usr/local/bin/docker-compose
 #Machine
 machine_version=`curl -sw %{redirect_url} https://github.com/docker/machine/releases/latest`
 machine_version=`echo ${machine_version##*/}`
-sudo bash -c "curl -sL https://github.com/docker/machine/releases/download/${machine_version}/docker-machine_`uname -s`-`uname -m` > /usr/local/bin/docker-machine"
+sudo bash -c "curl -sL https://github.com/docker/machine/releases/download/${machine_version}/docker-machine_`uname -s`-amd64 > /usr/local/bin/docker-machine"
 sudo chmod +rx /usr/local/bin/docker-machine
