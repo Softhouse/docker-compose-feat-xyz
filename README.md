@@ -134,11 +134,11 @@ echo "OAUTH2_PROXY_CLIENT_SECRET=default_client_secret >> oauth_proxy.env
 echo "OAUTH2_PROXY_COOKIE_SECRET=default_cookie_secret >> oauth_proxy.env
 ```
 
-This service is optional. To include this service, add ```-f apibackup.yml``` to the docker-compose command, ie. ```docker-compose -f docker-compose.yml -f oauth.yml```.
+This service is optional. To include this service, add ```-f oauth.yml``` to the docker-compose command, ie. ```docker-compose -f docker-compose.yml -f oauth.yml```.
 
 
 ### docker-bench-security
 
 An optional service that performs a security benchmark of the deployed services using a [docker-bench-security](https://github.com/docker/docker-bench-security) image. The results of the audit is printed to console and the service terminates.
 
-To perform a security benchmark either include this service, by adding ```-f apibackup.yml``` to the docker-compose command, or start the service separately by specifying ```apibackup.yml``` as the only file argument.
+To perform a security benchmark either include this service, by adding ```-f docker-bench-security.yml``` to the docker-compose command, or start the service separately by specifying ```docker-bench-security.yml``` as the only file argument.
