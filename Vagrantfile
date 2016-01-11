@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision :shell, path: 'linux-docker.sh', privileged: false
 
   ## run the service
-  #config.vm.provision :shell, inline: 'sg docker "docker-compose /vagrant/docker-compose.yml up -f -f /vagrant/deploy.yml -f /vagrant/docker-bench-security.yml"'
+  #config.vm.provision :shell, inline: 'sg docker "docker-compose -f /vagrant/docker-compose.yml -f /vagrant/docker-bench-security.yml"'
 
   ## deploy as upstart service and benchmark security
   config.vm.provision :shell, inline: 'sg docker "/vagrant/deploy.sh"'
