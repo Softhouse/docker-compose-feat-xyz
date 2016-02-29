@@ -20,7 +20,7 @@ server {
    }
 
     location /api/_hook/ {
-        proxy_pass http://sitewatcher;
+        proxy_pass http://template;
         proxy_set_header Host $host;
         proxy_pass_request_headers on;
         proxy_pass_request_body on;

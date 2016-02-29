@@ -73,18 +73,42 @@ A [mongodb](https://hub.docker.com/_/mongodb/) image with data retained at the h
 
 the mongodb service is used by the api and builder services. Optionally it can be periodically backed up by the apibackup service.
 
-### katalog
+### consul
 
-A [katalog](https://hub.docker.com/r/joakimbeng/katalog/) image with data retained at the host path ```/var/lib/mysql```
+A [consul](https://hub.docker.com/r/gliderlabs/consul-server/) image configured for server mode.
 
-Katalog is a service catalog and discovery application for use with Docker containers
+Consul provides service discovery for modules in xyz. The registry service, listed below, listens to docker events and registers them in consul.
 
-Katalog listens on Docker events, like container starts and stops.
-It looks for environment variables in containers with names KATALOG_VHOSTS and KATALOG_SERVICES and automatically adds them to its service and virtual host catalog. It also generates an nginx reversed proxy config for all virtual hosts.
+From [github.com/hashicorp/consul](https://github.com/hashicorp/consul):
 
-### sitewatcher
+* **Service Discovery** - Consul makes it simple for services to register
+  themselves and to discover other services via a DNS or HTTP interface.
+  External services such as SaaS providers can be registered as well.
 
-An [nginx](https://hub.docker.com/_/nginx/) Docker container which automatically reloads nginx when sites-enabled configs change.
+* **Health Checking** - Health Checking enables Consul to quickly alert
+  operators about any issues in a cluster. The integration with service
+  discovery prevents routing traffic to unhealthy hosts and enables service
+  level circuit breakers.
+
+* **Key/Value Storage** - A flexible key/value store enables storing
+  dynamic configuration, feature flagging, coordination, leader election and
+  more. The simple HTTP API makes it easy to use anywhere.
+
+* **Multi-Datacenter** - Consul is built to be datacenter aware, and can
+  support any number of regions without complex configuration.
+
+### registrator
+
+A [consul](https://hub.docker.com/r/gliderlabs/registrator/) image.
+
+Registrator listens on Docker start and stop events and registers the services with the consul service. The builder service sets the endpoint supplied from github as SERVICE_NAME resulting in the service name matching the endpoint.
+
+The / endpoint is currently not supported since services cannot be nameless.
+If multiple ports are supported by the docker container, each port may be added as a separate service with the name <service>-<port>
+
+### template
+
+A docker image built from [jonaseck2/docker-loadbalancer](https://github.com/jonaseck2/docker-loadbalancer) configured to generate an nginx configuration file for all known service known by the consul service. Multiple services with the same name (ie. endpoint) will result in load balancing.
 
 ### api
 
@@ -103,7 +127,7 @@ A docker image built from [Softhouse/flaming-computing-machine](https://github.c
 Build docker containers from GitHub repositories
 The build queue
 
-This service reads from the build queue stored by the api service and triggers docker build for them
+This service reads from the build queue stored by the api service and triggers docker build for them. It sets the endpoint configuration by setting both SERVICE_NAME (for consul) and KATALOG_VHOST (for katalog).
 
 To enable builds from private repositories you need to put ssh keys and config (id_rsa, id_rs.pub, ssh_config) in the builder/ssh folder
 

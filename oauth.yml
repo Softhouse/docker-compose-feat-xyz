@@ -3,21 +3,23 @@ services:
     oauth:
         image: a5huynh/oauth2_proxy
         ports:
-         - 4180
+        - 4180
         hostname: oauth
         env_file: oauth_proxy.env
         networks:
-         - proxy
-        command: --upstream=http://sitewatcher
+        - proxy
+        command: --upstream=http://template
                  --http-address=0.0.0.0:4180
                  --cookie-secure=false
                  --redirect-url="http://localhost:80/oauth2/callback"
                  --email-domain="softhouse.se"
+        environment:
+        - SERVICE_IGNORE=always
         restart: unless-stopped
     proxy:
         build:
             context: proxy
             dockerfile: Dockerfile_oauth
         networks:
-         - proxy
+        - proxy
         restart: unless-stopped

@@ -9,6 +9,7 @@ services:
         restart: unless-stopped
         environment:
         - MONGO_PORT_27017_TCP_ADDR=mongodb
+        - SERVICE_IGNORE=always
     mongodb:
         volumes:
         - /var/mongo/backup:/data/backup

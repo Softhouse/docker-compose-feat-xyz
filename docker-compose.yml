@@ -8,40 +8,60 @@ services:
         volumes:
         - /var/mongo/db:/data/db
         networks:
-        - mongo
         - service
+        - mongo
+        environment:
+        - SERVICE_IGNORE=always
         restart: unless-stopped
-    katalog:
-        build: github.com/joakimbeng/katalog.git
+    consul:
+        image: gliderlabs/consul-server
+        command: -bootstrap
+        hostname: consul
         ports:
-        - 5005
-        privileged: true
-        volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /var/katalog/data:/app/data
-        - /var/katalog/nginx:/app/nginx
+        - 8300:8300
+        - 8400:8400
+        - 8500:8500
+        - 8600:53/udp
+        networks:
+        - service
+        environment:
+        - SERVICE_IGNORE=always
         restart: unless-stopped
-    sitewatcher:
-        build: github.com/joakimbeng/nginx-site-watcher.git
-        hostname: sitewatcher
-        ports:
-        - 80
+    registrator:
+        image: gliderlabs/registrator
+        hostname: registrator
+        command: -internal
+                 -resync 30
+                 consul://consul:8500
+        networks:
+        - service
         volumes:
-        - /var/katalog/nginx:/etc/nginx/sites-enabled
+        - /var/run/docker.sock:/tmp/docker.sock
+        environment:
+        - SERVICE_IGNORE=always
+        restart: unless-stopped
+    template:
+        build: https://github.com/jonaseck2/docker-loadbalancer.git
+        hostname: template
         networks:
             service:
                 aliases:
                 - xyz
             proxy:
+        ports:
+        - 80
+        environment:
+        - SERVICE_IGNORE=always
         restart: unless-stopped
     api:
         build: github.com/Softhouse/laughing-batman.git
         volumes:
         - ./api/config:/app/config
+        hostname: api
         env_file: github_secret.env
         environment:
-        - KATALOG_VHOSTS=default/api
         - MONGO_HOST=mongodb
+        - SERVICE_NAME=api
         networks:
         - service
     builder:
@@ -54,6 +74,8 @@ services:
         environment:
         - MONGO_HOST=mongodb
         - SERVICE_NET=xyzdeploy_service
+        - SERVICE_IGNORE=always
+        - SERVICE_DNS=consul, 8.8.8.8, 8.8.4.4
         networks:
         - mongo
         restart: unless-stopped
@@ -64,6 +86,8 @@ services:
         - 80:80
         networks:
         - proxy
+        environment:
+        - SERVICE_IGNORE=always
         restart: unless-stopped
 networks:
     service:
