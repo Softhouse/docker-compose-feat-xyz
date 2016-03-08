@@ -26,6 +26,8 @@ api:
     build: github.com/letterix/laughing-batman.git
     links:
      - mongodb
+    volumes:
+     - /api/config:/config
     env_file: github_secret.env
     environment:
      - KATALOG_VHOSTS=default/api
@@ -36,9 +38,9 @@ builder:
      - mongodb
      - sitewatcher:xyz
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - /usr/bin/docker:/usr/bin/docker
-    - ./builder/ssh:/ssh
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /usr/bin/docker:/usr/bin/docker
+     - ./builder/ssh:/ssh
     env_file: github_secret.env
     environment:
      - MONGO_HOST=mongodb
