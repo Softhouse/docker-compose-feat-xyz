@@ -23,7 +23,7 @@ sitewatcher:
      - /var/katalog/nginx:/etc/nginx/sites-enabled
     restart: unless-stopped
 api:
-    build: github.com/Softhouse/laughing-batman.git
+    build: github.com/letterix/laughing-batman.git
     links:
      - mongodb
     env_file: github_secret.env
@@ -31,7 +31,7 @@ api:
      - KATALOG_VHOSTS=default/api
      - MONGO_HOST=mongodb
 builder:
-    build: github.com/Softhouse/flaming-computing-machine.git
+    build: github.com/letterix/flaming-computing-machine.git
     links:
      - mongodb
      - sitewatcher:xyz
