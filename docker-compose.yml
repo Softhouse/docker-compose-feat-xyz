@@ -27,7 +27,7 @@ api:
     links:
      - mongodb
     volumes:
-     - /api/config:/app/config
+     - ./api/config:/app/config
     env_file: github_secret.env
     environment:
      - KATALOG_VHOSTS=default/api
