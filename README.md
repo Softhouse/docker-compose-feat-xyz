@@ -94,6 +94,8 @@ Dynamic Restful ExpressJS And MongoDB Service
 
 This is a REST API server built using ExpressJS and MongoDB. It has dynamic endpoints, e.g. POST /item will create a MongoDB collection called item and insert the posted body into the collection. The stored "item" can then be retreived by GET /item.
 
+To enable private repositories (bitbucket only atm), you need to have a config entry, for each desired private repository, inside of api/config/default.json (see the file for example usage). Further, each of these repositories needs to have ssh key set up to match the keys used in the builder modules (see below).
+
 ### builder
 
 A docker image built from [Softhouse/flaming-computing-machine](https://github.com/Softhouse/flaming-computing-machine.git)
