@@ -1,2 +1,4 @@
 .vagrant/
 *.env
+builder/ssh/
+api/config/

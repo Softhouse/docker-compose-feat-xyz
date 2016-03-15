@@ -36,6 +36,8 @@ services:
         restart: unless-stopped
     api:
         build: github.com/Softhouse/laughing-batman.git
+        volumes:
+        - ./api/config:/app/config
         env_file: github_secret.env
         environment:
         - KATALOG_VHOSTS=default/api

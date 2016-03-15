@@ -1,6 +1,6 @@
 # xyz-deploy
 
-Orchestrates a open web platform that deploys docker based web services on any endpoint using github hooks. 
+Orchestrates a open web platform that deploys docker based web services on any endpoint using github hooks.
 
 ## Usage
 
@@ -14,7 +14,7 @@ Create the preshared key file by executing the following command:
 echo "GITHUB_SECRET=your_secret_here" > github_secret.env
 ```
 
-If the oauth service is to be used, a similar file needs to be created for oauth configuration. See the oauth service below. 
+If the oauth service is to be used, a similar file needs to be created for oauth configuration. See the oauth service below.
 
 ### Using docker Machine
 
@@ -29,7 +29,7 @@ Start git bash and execute the following commands to start the service:
 
 The service is deployed to the ip address, port 80, listed in the docker-machine step.
 
-The ```docker-machine.sh``` script defaults to creating a new machine using the virtualbox driver. See https://docs.docker.com/machine/drivers/ for how to deploy to a cloud service. Due to limitations in docker and docker-compose, the service can only be deployed to a single host until the docker networking support overhaul is fully implemented. 
+The ```docker-machine.sh``` script defaults to creating a new machine using the virtualbox driver. See https://docs.docker.com/machine/drivers/ for how to deploy to a cloud service. Due to limitations in docker and docker-compose, the service can only be deployed to a single host until the docker networking support overhaul is fully implemented.
 
 ### Windows Vagrant installation
 
@@ -94,6 +94,8 @@ Dynamic Restful ExpressJS And MongoDB Service
 
 This is a REST API server built using ExpressJS and MongoDB. It has dynamic endpoints, e.g. POST /item will create a MongoDB collection called item and insert the posted body into the collection. The stored "item" can then be retreived by GET /item.
 
+To enable private repositories (bitbucket only atm), you need to have a config entry, for each desired private repository, inside of api/config/default.json (see the file for example usage). Further, each of these repositories needs to have ssh key set up to match the keys used in the builder modules (see below).
+
 ### builder
 
 A docker image built from [Softhouse/flaming-computing-machine](https://github.com/Softhouse/flaming-computing-machine.git)
@@ -103,9 +105,11 @@ The build queue
 
 This service reads from the build queue stored by the api service and triggers docker build for them
 
+To enable builds from private repositories you need to put ssh keys and config (id_rsa, id_rs.pub, ssh_config) in the builder/ssh folder
+
 ### proxy
 
-An [nginx](https://hub.docker.com/_/nginx/) image responsible for filtering github requests if the optional oauth service is enabled. 
+An [nginx](https://hub.docker.com/_/nginx/) image responsible for filtering github requests if the optional oauth service is enabled.
 
 ### apibackup
 
@@ -119,7 +123,7 @@ TODO restore?
 
 ### oauth
 
-An [a5huynh/oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy) image which is a dockerized version of an oauth2 proxy implementation by [bitly](https://bitly.com). This service is currently configured to use google as oauth provider and limit access to members of the softhouse organization. 
+An [a5huynh/oauth2_proxy](https://hub.docker.com/r/a5huynh/oauth2_proxy) image which is a dockerized version of an oauth2 proxy implementation by [bitly](https://bitly.com). This service is currently configured to use google as oauth provider and limit access to members of the softhouse organization.
 See github [README](https://github.com/bitly/oauth2_proxy/blob/master/README.md) for how to configure the plugin.
 
 The oauth service adds oauth perimiter securcurity to the service.
