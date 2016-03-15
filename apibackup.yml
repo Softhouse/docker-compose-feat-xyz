@@ -1,10 +1,14 @@
-apibackup:
-    build: github.com/Softhouse/docker-mongodump.git
-    links:
-     - mongodb:mongo
-    volumes:
-     - /var/mongo/backup:/backup
-    restart: unless-stopped
-mongodb:
-    volumes:
-     - /var/mongo/backup:/data/backup
+version: '2'
+services:
+    apibackup:
+        build: github.com/Softhouse/docker-mongodump.git
+        networks:
+        - mongo
+        volumes:
+        - /var/mongo/backup:/backup
+        restart: unless-stopped
+        environment:
+        - MONGO_PORT_27017_TCP_ADDR=mongodb
+    mongodb:
+        volumes:
+        - /var/mongo/backup:/data/backup
