@@ -13,10 +13,12 @@ Vagrant.configure(2) do |config|
   files = Dir.glob("#{vagrant_root}/*.yml")
     files.each do |file|
     yml = YAML::load_file(file)
-    yml.each do |service|
+    yml['services'].each do |service|
       ports = service[1]['ports'].each do |port|
-        host, guest = port.split(':')
-        config.vm.network "forwarded_port", guest: host, host: host, protocol: 'tcp'
+        if port =~ /:/
+          host, guest, protocol = port.split(/[\/:]/)
+          config.vm.network "forwarded_port", guest: host, host: host, protocol: protocol ||= 'tcp'
+        end
       end unless service[1]['ports'].nil?
     end unless yml.nil?
   end unless files.nil?
