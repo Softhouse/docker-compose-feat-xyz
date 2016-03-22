@@ -22,7 +22,7 @@ services:
         - /var/katalog/nginx:/app/nginx
         restart: unless-stopped
     sitewatcher:
-        build: github.com/letterix/nginx-site-watcher.git
+        build: github.com/joakimbeng/nginx-site-watcher.git
         hostname: sitewatcher
         ports:
         - 80
