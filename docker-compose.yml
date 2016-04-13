@@ -12,7 +12,7 @@ services:
         - service
         restart: unless-stopped
     katalog:
-        build: github.com/jonaseck2/katalog.git
+        build: github.com/joakimbeng/katalog.git
         ports:
         - 5005
         privileged: true
