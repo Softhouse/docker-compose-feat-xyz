@@ -12,12 +12,14 @@ sudo usermod -a -G docker `id -g -n` # requires relogin. Need to manually set gr
 #Compose
 compose_version=`curl -sw %{redirect_url} https://github.com/docker/compose/releases/latest`
 compose_version=`echo ${compose_version##*/}`
-sudo bash -c "curl -sL https://raw.githubusercontent.com/docker/compose/${compose_version}/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose"
-sudo bash -c "curl -sL https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
-sudo chmod +rx /usr/local/bin/docker-compose
+sudo bash -c "\
+ curl -sL https://raw.githubusercontent.com/docker/compose/${compose_version}/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose && \
+ curl -sL https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose && \
+ chmod +x /usr/local/bin/docker-compose"
 
 #Machine
 machine_version=`curl -sw %{redirect_url} https://github.com/docker/machine/releases/latest`
 machine_version=`echo ${machine_version##*/}`
-sudo bash -c "curl -sL https://github.com/docker/machine/releases/download/${machine_version}/docker-machine_`uname -s`-amd64 > /usr/local/bin/docker-machine"
-sudo chmod +rx /usr/local/bin/docker-machine
+sudo bash -c "\
+ curl -sL https://github.com/docker/machine/releases/download/${machine_version}/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+ chmod +x /usr/local/bin/docker-machine"
