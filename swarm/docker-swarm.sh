@@ -13,10 +13,10 @@ for label in {1..2} ;do
   export advertise_ip="$(docker-machine ip ${machine_name})"
   eval $(docker-machine env ${machine_name})
   if [ "${label}" -eq "1" ];then
-    compose_file_args="-f consul.yml"
+    compose_file_args="-f agent.yml -f master.yml"
     export consul_ip="$(docker-machine ip ${machine_name})"
   else
-    compose_file_args="-f consul.yml -f manager-join.yml"
+    compose_file_args="-f agent.yml -f master.yml -f master-join.yml"
   fi
   docker-compose ${compose_file_args} stop
   docker-compose ${compose_file_args} rm -fv --all
@@ -36,7 +36,7 @@ for label in {1..2} ;do
       ${machine_name}
   export advertise_ip="$(docker-machine ip ${machine_name})"
   eval $(docker-machine env ${machine_name})
-  compose_file_args="-f consul.yml -f agent-join.yml"
+  compose_file_args="-f agent.yml"
   docker-compose ${compose_file_args} stop
   docker-compose ${compose_file_args} rm -fv --all
   docker-compose ${compose_file_args} up -d
@@ -52,10 +52,10 @@ for label in {1..2} ;do
       ${machine_name}
   export advertise_ip="$(docker-machine ip ${machine_name})"
   eval $(docker-machine env ${machine_name})
-  compose_file_args="-f consul.yml -f agent-join.yml"
+  compose_file_args="-f agent.yml"
   docker-compose ${compose_file_args} stop
   docker-compose ${compose_file_args} rm -fv --all
   docker-compose ${compose_file_args} up -d
 done
 
-eval $(docker-machine env --swarm $master_name)
+eval $(docker-machine env --swarm ${master_name})
