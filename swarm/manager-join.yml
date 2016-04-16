@@ -1,0 +1,4 @@
+version: '2'
+services:
+  consul:
+    command: "-node ${machine_name} -server -advertise ${advertise_ip} -join ${consul_ip}"
