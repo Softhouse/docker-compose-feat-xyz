@@ -28,6 +28,7 @@ services:
         - 80
         volumes:
         - /var/katalog/nginx:/etc/nginx/sites-enabled
+        - ./sitewatcher/nginx.conf:/etc/nginx/nginx.conf
         networks:
             service:
                 aliases:
